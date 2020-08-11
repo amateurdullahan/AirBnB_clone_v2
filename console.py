@@ -115,27 +115,50 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
+        # ensure have args to get at least class name from
         if args is None:
             print("** class name missing **")
             return
+        # split arguments by space to get class name
         args = args.split()
+        # check if class name is in current list of available classes
         if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         else:
             cls = args[0]
+        # if class does exist, create new instance and save
         new_instance = HBNBCommand.classes[cls]()
         storage.save()
         print(new_instance.id)
-        args = args[1:]
+        # if more arguments, resets args without class name
+        if args[1]:
+            args = args[1:]
+        else:
+            return
+        # pulls dictionary of objects with new instance set at dict_key
         dict_key = "{}.{}".format(cls, new_instance.id)
         __objects = storage.all()
+        # loops through each argument, splitting into key/value pairs
         for argument in args:
             sa = argument.split("=")
             key = sa[0]
             value = sa[1]
+            # if there are underscores in value, changed to spaces
+            for i in range(len(value)):
+                if value[i] == "_":
+                    value = value[:i] + " " + value[i+1:]
+            # if there are quotes around key or value, trimmed to remove
+            if (key[0] == "'" and key[-1] == "'") or (
+                    key[0] == "\"" and key[-1] == "\""):
+                key = key[1:-1]
+            if (value[0] == "'" and value[-1] == "'") or (
+                    value[0] == "\"" and value[-1] == "\""):
+                value = value[1:-1]
             """print("This is key: {} and value: {}".format(key, value))"""
+            # atrribute is set to that key in the dictionary of objects
             setattr(__objects[dict_key], key, value)
+        # new key/value pairs for the object are saved
         storage.save()
 
     def help_create(self):
