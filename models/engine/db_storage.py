@@ -14,7 +14,6 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 classes = {"Amenity": Amenity, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
-
 class DBStorage():
     """new storge"""
     __engine = None
@@ -37,7 +36,7 @@ class DBStorage():
         """squery database session"""
         all_dict = {}
         for itr in classes:
-            if cls is None or cls is classes[itr]:
+            if cls is None or cls is classes[itr] or cls is itr:
                 objs = self.__session.query(classes[itr]).all()
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id
@@ -46,7 +45,9 @@ class DBStorage():
 
     def new(self, obj):
         """add new obj"""
-        self.__session.add(obj)
+        if obj is not None:
+            self.__session.add(obj)
+            self.save()
 
     def save(self):
         """commit changes"""
