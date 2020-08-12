@@ -37,9 +37,26 @@ class test_fileStorage(unittest.TestCase):
 
     def test_all(self):
         """ __objects is properly returned """
+        # tests that storage.all() returns dictionary of objects
         new = BaseModel()
         temp = storage.all()
         self.assertIsInstance(temp, dict)
+        self.assertIn(new, temp)
+        # tests storage.all() with cls argument, with no cls instances
+        all_states = storage.all(State)
+        self.assertEqual(len(all_states.keys()), 0)
+        # creates cls instance and retests storage.all() with cls
+        new_state = State()
+        new_state.name = "California"
+        storage.new(new_state)
+        storage.save()
+        all_states = storage.all(State)
+        self.assertEqual(len(all_states.keys()), 1)
+        self.assertIn("California", all_states)
+        # tests delete method
+        storage.delete(new_state)
+        all_states = storage.all(State)
+        self.assertEqual(len(all_states.keys()), 0)
 
     def test_base_model_instantiation(self):
         """ File is not created on BaseModel save """
