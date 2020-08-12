@@ -155,7 +155,7 @@ class HBNBCommand(cmd.Cmd):
             if (value[0] == "'" and value[-1] == "'") or (
                     value[0] == "\"" and value[-1] == "\""):
                 value = value[1:-1]
-            """print("This is key: {} and value: {}".format(key, value))"""
+            print("This is key: {} and value: {}".format(key, value))
             # atrribute is set to that key in the dictionary of objects
             setattr(__objects[dict_key], key, value)
         # new key/value pairs for the object are saved
