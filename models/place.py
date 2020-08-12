@@ -3,14 +3,14 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from models import storage
+import models
 
 
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
-    city_id = Column(String(60), nullable=False, ForeignKey('cities.id'))
-    user_id = Column(String(60), nullable=False, ForeignKey('users.id'))
+    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
+    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024))
     number_rooms = Column(Integer, nullable=False, default=0)
@@ -29,7 +29,7 @@ class Place(BaseModel, Base):
     def reviews(self):
         """ getter for reviews associated with this Place """
         list_reviews = []
-        __objects = storage.all()
+        __objects = models.storage.all()
         for obj in __objects:
             if place_id in obj and obj.place_id == self.id:
                 list_reviews += obj
