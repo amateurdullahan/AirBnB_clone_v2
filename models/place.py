@@ -19,8 +19,11 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
+    amenity_ids = []
+
     # need to specify this is for DBStorage
     reviews = relationship("Review", cascade="all, delete", backref="place")
+
     # need to specify this is for FileStorage
     @property
     def reviews(self):
@@ -31,4 +34,3 @@ class Place(BaseModel, Base):
             if place_id in obj and obj.place_id == self.id:
                 list_reviews += obj
         return list_reviews
-    amenity_ids = []
