@@ -11,7 +11,9 @@ from models.state import State
 from models.user import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-classes = {"Amenity": Amenity, "City": City, "Place": Place, "Review": Review, "State": State, "User": User}
+"""classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}"""
+classes= {"City": City, "State": State}
 
 
 class DBStorage():
@@ -19,12 +21,13 @@ class DBStorage():
     __engine = None
     __session = None
 
-    def __init_(self):
+    def __init__(self):
         """initialization"""
         HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
         HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD')
         HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
         HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
+        HBNB_ENV = getenv('HBNB_ENV')
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(HBNB_MYSQL_USER, HBNB_MYSQL_PWD, HBNB_MYSQL_HOST, HBNB_MYSQL_DB), pool_pre_ping=True)
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
@@ -32,10 +35,12 @@ class DBStorage():
     def all(self, cls=None):
         """squery database session"""
         all_dict = {}
-        obj = self.__session.query(classes[cls]).all()
-        for obj in objs:
-            key = obj.__class__.__name__ + '.' + obj.id
-            all_dict[key] = obj
+        for itr in classes:
+            if cls is None or cls is classes[itr]:
+                objs = self.__session.query(classes[itr]).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    all_dict[key] = obj
         return (all_dict)
 
     def new(self, obj):
