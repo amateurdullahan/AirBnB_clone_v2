@@ -4,6 +4,18 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 import models
+place_amenity = Table('place_amenity',
+                      Base.metadata,
+                      Column('place_id',
+                             String(60),
+                             ForeignKey('places.id'),
+                             nullable=False,
+                             primary_key=True),
+                      Column('amenity_id',
+                             String(60),
+                             ForeignKey('amenities.id'),
+                             nullable=False,
+                             primary_key=True))
 
 
 class Place(BaseModel, Base):
@@ -20,25 +32,13 @@ class Place(BaseModel, Base):
     latitude = Column(Float)
     longitude = Column(Float)
     amenity_ids = []
+    amenities = relationship('Amenity',
+                             secondary=place_amenity,
+                             backref='places',
+                             viewonly=False)
 
     # need to specify this is for DBStorage
     reviews = relationship("Review", cascade="all, delete", backref="place")
-    place_amenity = Table('place_amenity',
-                          Base.metadata,
-                          Column('place_id',
-                                 String(60),
-                                 ForeignKey('places.id'),
-                                 nullable=False,
-                                 primary_key=True),
-                          Column('amenity_id',
-                                 String(60),
-                                 ForeignKey('amenities.id'),
-                                 nullable=False,
-                                 primary_key=True))
-    amenities = relationship("Amenity",
-                             secondary=place_amenity,
-                             backref="place_amenities",
-                             viewonly=False)
 
     # need to specify this is for FileStorage
     @property
