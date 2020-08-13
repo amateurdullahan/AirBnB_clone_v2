@@ -36,7 +36,7 @@ class DBStorage():
         """squery database session"""
         all_dict = {}
         for itr in classes:
-            if cls is None or cls is classes[itr] or cls is itr:
+            if cls is None or cls == itr:
                 objs = self.__session.query(classes[itr]).all()
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id
@@ -57,6 +57,7 @@ class DBStorage():
         """delete obj if exists"""
         if obj is not None:
             del obj
+            self.save()
 
     def reload(self):
         """reload"""

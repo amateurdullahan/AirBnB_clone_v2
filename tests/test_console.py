@@ -11,12 +11,6 @@ import os
 class TestHBNBCommandClass(TestCase):
     """ Tests HBNBCommand class """
 
-    def test_do_all(self):
-        """ Tests all method """
-        with patch('sys.stdout', new=StringIO()) as f:
-            HBNBCommand().onecmd("create bad")
-            self.assertEqual(f.getvalue(), "** class doesn't exist **\n")
-
     def test_do_create(self):
         """ Tests create method """
         # remove file.json, if exists
@@ -55,4 +49,4 @@ class TestHBNBCommandClass(TestCase):
         __objects = storage.all()
         self.assertTrue(dict_key in __objects)
         # tests that underscores in value were changed to spaces
-        self.assertEqual(__objects[dict_key].name, "My little House")
+        self.assertEqual(__objects[dict_key].name, "My little house")
