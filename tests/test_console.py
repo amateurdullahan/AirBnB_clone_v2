@@ -13,11 +13,12 @@ class TestHBNBCommandClass(TestCase):
 
     def test_do_create(self):
         """ Tests create method """
-        # remove file.json, if exists
-        try:
-            os.remove('file.json')
-        except:
-            pass
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("count State")
+            state_count = int(f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("count Place")
+            place_count = int(f.getvalue())
         # checks error message if no class argument given
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("create")
@@ -30,23 +31,24 @@ class TestHBNBCommandClass(TestCase):
         HBNBCommand().onecmd("create State name=\"California\"")
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("count State")
-            self.assertEqual(f.getvalue(), "1\n")
+            self.assertEqual(f.getvalue(), "{}\n".format(state_count + 1))
         # tests obj created successfully when not first
         HBNBCommand().onecmd("create State name=\"Nevada\"")
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("count State")
-            self.assertEqual(f.getvalue(), "2\n")
+            self.assertEqual(f.getvalue(), "{}\n".format(state_count + 2))
         # tests obj created with different class, saves id
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd(
                 "create Place name=\"My_little_house\" number_rooms=4")
             p_id = f.getvalue()
+            p_id = p_id[:-1]
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("count Place")
-            self.assertEqual(f.getvalue(), "1\n")
+            self.assertEqual(f.getvalue(), "{}\n".format(place_count + 1))
         # checks that after do_create, obj exists in dictionary
         dict_key = "Place." + p_id
         __objects = storage.all()
-        self.assertTrue(dict_key in __objects)
+        self.assertTrue(dict_key in __objects.keys())
         # tests that underscores in value were changed to spaces
         self.assertEqual(__objects[dict_key].name, "My little house")
