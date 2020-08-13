@@ -23,11 +23,22 @@ class Place(BaseModel, Base):
 
     # need to specify this is for DBStorage
     reviews = relationship("Review", cascade="all, delete", backref="place")
-    amenities = relationship("Amenity", 
-                             secondary="place_amenity",
+    place_amenity = Table('place_amenity',
+                          Base.metadata,
+                          Column('place_id',
+                                 String(60),
+                                 ForeignKey('places.id'),
+                                 nullable=False,
+                                 primary_key=True),
+                          Column('amenity_id',
+                                 String(60),
+                                 ForeignKey('amenities.id'),
+                                 nullable=False,
+                                 primary_key=True))
+    amenities = relationship("Amenity",
+                             secondary=place_amenity,
                              backref="place_amenities",
                              viewonly=False)
-    place_amenity = Table('place_amenity', Base.metadata, Column('place_id', String(60), ForeignKey('places.id'), nullable=False, primary_key=True), Column('amenity_id', String(60), ForeignKey('amenities.id'), nullable=False, primary_key=True))
 
     # need to specify this is for FileStorage
     @property
@@ -35,11 +46,12 @@ class Place(BaseModel, Base):
         """ getter for reviews associated with this Place """
         list_reviews = []
         __objects = models.storage.all(Review)
-        for obj in __objects:
+        for k, obj in __objects.items():
             if place_id in obj and obj.place_id == self.id:
                 list_reviews += obj
         return list_reviews
 
+    # no dunder, correct?
     @property
     def amenities(self):
         """the getter"""
