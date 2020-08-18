@@ -1,23 +1,28 @@
 #!/usr/bin/python3
-"""comment"""
-from os.path import exists
+"""distro"""
 from fabric.api import *
-env.hosts = ['35.237.97.2', '3.88.171.89']
+env.user = 'ubuntu'
+web01, web02 = '35.237.97.2', '3.88.171.89'
+env.hosts = [web01, web02]
 
 
 def do_deploy(archive_path):
-    """deep loy"""
-    if exists(archive_path) is False:
+    """ do_deploy docstring """
+    from os.path import isfile
+    if not isfile(archive_path):
         return False
+
     try:
-        archive = archive_path.split('/')[-1]
-        put(archive, '/tmp/')
-        release = '/data/web_static/releases/{}'.format(archive.split('.')[1])
-        run('mkdir -p {}'.format(release))
-        run('tar -xzvf /tmp/{} -C {}'.format(archive, release))
-        run('rm /tmp/{}'.format(archive))
-        run('rm /data/web_static/current')
-        run('ln -sf /data/web_static/current {}'.format(release))
+        put(archive_path, "/tmp/")
+        archive = archive_path.split('/')[1]
+        output = "/data/web_static/releases/{}".format(archive.split('.')[0])
+        run("mkdir -p {}/".format(output))
+        run("tar -xzf /tmp/{} -C {}/".format(archive, output))
+        run("rm -rf /tmp/{}".format(archive))
+        run("mv {}/web_static/* {}".format(output, output))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {}/ /data/web_static/current".format(output))
+        print("New version deployed!")
         return True
     except:
         return False
