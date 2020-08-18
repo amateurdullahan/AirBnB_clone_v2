@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 """comment"""
-import os.path
+from os.path import exists
 from fabric.api import *
 env.hosts = ['35.237.97.2', '3.88.171.89']
 
 
 def do_deploy(archive_path):
     """deep loy"""
-    if os.path.isFile(archive_path) is False:
-        return False:
+    if exists(archive_path) is False:
+        return False
     try:
         archive = archive_path.split('/')[-1]
         put(archive, '/tmp/')
